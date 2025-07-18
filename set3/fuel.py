@@ -19,7 +19,7 @@ def get_percentage() -> str:
             elif int_x == 0 and int_y != 0:
                 percentage = "E"
             else:
-                percentage = f"{int((int_x / int_y) * 100)}%"
+                percentage = f"{round((int_x / int_y) * 100)}%"
 
         except ZeroDivisionError:
             pass
