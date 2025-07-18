@@ -12,8 +12,8 @@ def build_grocery_dict() -> dict[str, int]:
 
 def main():
     grocery_dict = build_grocery_dict()
-    for item, count in grocery_dict.items():
-        print(count, end=" ")
+    for item in sorted(grocery_dict):
+        print(grocery_dict[item], end=" ")
         print(item.upper())
 
 
