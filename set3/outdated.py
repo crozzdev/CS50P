@@ -1,94 +1,65 @@
-MONTHS = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-]
+import sys
+
+MONTHS = {
+    "January": 1,
+    "February": 2,
+    "March": 3,
+    "April": 4,
+    "May": 5,
+    "June": 6,
+    "July": 7,
+    "August": 8,
+    "September": 9,
+    "October": 10,
+    "November": 11,
+    "December": 12,
+}
+
+MAX_DAYS_MONTH = 31
+MAX_MONTHS_YEAR = 12
 
 
-def parse_numeric_date(date_str):
-    """Parse MM/DD/YYYY format"""
-    try:
-        parts = date_str.split("/")
-        if len(parts) != 3:
-            return None
+def get_and_check_date() -> list:
 
-        month_str, day_str, year_str = parts
-        month = int(month_str)
-        day = int(day_str)
-        year = int(year_str)
-
-        # Validate ranges
-        if not (1 <= month <= 12 and 1 <= day <= 31):
-            return None
-
-        return year, month, day
-    except ValueError:
-        return None
-
-
-def parse_textual_date(date_str):
-    """Parse 'Month DD, YYYY' format"""
-    try:
-        # Remove comma and split by spaces
-        date_str = date_str.replace(",", "")
-        parts = date_str.split()
-
-        if len(parts) != 3:
-            return None
-
-        month_str, day_str, year_str = parts
-
-        # Check if month is valid
-        if month_str not in MONTHS:
-            return None
-
-        month = MONTHS.index(month_str) + 1
-        day = int(day_str)
-        year = int(year_str)
-
-        # Validate ranges
-        if not (1 <= day <= 31):
-            return None
-
-        return year, month, day
-    except ValueError:
-        return None
-
-
-def get_date():
-    """Prompt user for date until valid input is provided"""
     while True:
-        date_input = input("Date: ").strip()
 
-        # Try parsing as numeric format first
-        if "/" in date_input:
-            result = parse_numeric_date(date_input)
-            if result:
-                return result
+        try:
+            date_str = input("Date: ").strip()
+            if "/" not in date_str and "," not in date_str:
+                continue
+            date_list = date_str.split() if not "/" in date_str else date_str.split("/")
+            if len(date_list) == 3:
+                month, day, year = date_list
 
-        # Try parsing as textual format
-        elif "," in date_input:
-            result = parse_textual_date(date_input)
-            if result:
-                return result
+                day = day.replace(",", "")
 
-        # If neither format works, continue the loop (reprompt)
-        continue
+                is_valid_day = day.isdigit() and 0 < int(day) <= MAX_DAYS_MONTH
+                is_valid_year = year.isdigit() and len(year) <= 4
+
+                if (
+                    is_valid_day
+                    and is_valid_year
+                    and month.isalpha()
+                    and month in MONTHS.keys()
+                ):
+                    month = MONTHS[month]
+                    return [int(year), int(month), int(day)]
+                if (
+                    is_valid_day
+                    and is_valid_year
+                    and month.isdigit()
+                    and 0 < int(month) <= MAX_MONTHS_YEAR
+                ):
+                    return [int(year), int(month), int(day)]
+
+        except EOFError:
+            sys.exit(0)
 
 
 def main():
-    year, month, day = get_date()
-    print(f"{year}-{month:02d}-{day:02d}")
+    date = get_and_check_date()
+    year, month, day = date
+    print(f"{year}-{month:02}-{day:02}")
 
 
-if __name__ == "__main__":
-    main()
+main()
