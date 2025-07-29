@@ -1,32 +1,31 @@
 import random
 
 
-def get_positive_int_input(message: str) -> int:
-    """Prompt until a positive integer (n>0) is provided"""
-    num = 0
-    while num <= 0:
+def prompt_positive_int(prompt: str) -> int:
+    """Prompt until the user enters a positive integer (> 0)."""
+    while True:
         try:
-            num = int(input(f"{message} "))
+            n = int(input(f"{prompt} "))
+            if n > 0:
+                return n
         except ValueError:
             pass
-    return num
 
 
-def main():
-    level = get_positive_int_input("Level:")
-
+def main() -> None:
+    level = prompt_positive_int("Level:")
     target = random.randint(1, level)
 
     while True:
-        guess = get_positive_int_input("Guess:")
-
+        guess = prompt_positive_int("Guess:")
         if guess < target:
             print("Too small!")
         elif guess > target:
             print("Too large!")
         else:
             print("Just right!")
-            break
+            return
 
 
-main()
+if __name__ == "__main__":
+    main()
