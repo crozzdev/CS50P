@@ -8,6 +8,8 @@ dependencies = [
     "emoji>=2.14.1",
     "inflect>=7.5.0",
     "pyfiglet>=1.0.3",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
 ]
 
 [dependency-groups]
