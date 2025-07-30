@@ -19,19 +19,19 @@ def is_valid(plate: str) -> bool:
 
 
 def _has_valid_number_placement(plate: str) -> bool:
-
-    if not plate[-1].isdigit():
-        return False
+    """Check if the license plate has numbers in valid positions."""
+    # If there are no digits, the plate is valid
+    if not any(char.isdigit() for char in plate):
+        return True
 
     for index in range(len(plate) - 1):
-
-        if plate[index].isdigit() and plate[index] == "0":
+        if plate[index].isalpha() and plate[index + 1] == "0":
             return False
-
-        if plate[index].isdigit() and not plate[index + 1].isdigit():
+        if plate[index].isdigit() and plate[index + 1].isalpha():
             return False
 
     return True
 
 
-main()
+if __name__ == "__main__":
+    main()
