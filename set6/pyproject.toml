@@ -1,0 +1,14 @@
+[project]
+name = "set6"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "tabulate>=0.9.0",
+]
+
+[dependency-groups]
+dev = [
+    "pylint>=3.3.7",
+]
