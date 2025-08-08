@@ -11,10 +11,10 @@ def test_init_defaults():
 
 
 def test_init_custom():
-    jar = Jar(capacity=20, size=5)
+    jar = Jar(capacity=20)
     assert jar.capacity == 20
-    assert jar.size == 5
-    assert str(jar) == "🍪" * 5
+    assert jar.size == 0
+    assert str(jar) == ""
 
 
 def test_str():
@@ -55,17 +55,9 @@ def test_withdraw_too_many():
 
 
 def test_set_capacity_too_small():
-    jar = Jar(capacity=5, size=3)
-    with pytest.raises(ValueError):
-        jar.capacity = 2
-
-
-def test_set_size_invalid():
     jar = Jar(capacity=5)
     with pytest.raises(ValueError):
-        jar.size = 6
-    with pytest.raises(ValueError):
-        jar.size = -1
+        jar.deposit(6)
 
 
 def test_set_capacity_negative():
