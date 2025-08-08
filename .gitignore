@@ -52,3 +52,6 @@ coverage.xml
 
 # DS_Store files
 .DS_Store
+
+#PDF files
+*.pdf
