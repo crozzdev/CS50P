@@ -37,7 +37,7 @@ def create_shirtificate(name: str) -> None:
     pdf.set_y(TEXT_Y)
     pdf.cell(w=0, h=10, text=f"{name} took CS50", border=0, align="C")
 
-    pdf.output(f"shirtificate_{safe_filename(name)}.pdf")
+    pdf.output("shirtificate.pdf")
 
 
 if __name__ == "__main__":
