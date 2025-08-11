@@ -1,5 +1,4 @@
 def check_greeting(greeting: str) -> int:
-    greeting = greeting.lower()
     if greeting.startswith("hello"):
         return 0
     elif greeting.startswith("h"):
@@ -9,7 +8,7 @@ def check_greeting(greeting: str) -> int:
 
 
 def main():
-    greeting = input("Greeting: ")
+    greeting = input("Greeting: ").strip().lower()
     print(f"${check_greeting(greeting)}")
 
 

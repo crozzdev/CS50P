@@ -2,11 +2,11 @@ def main():
     time = input("What time is it?: ")
     time_float = convert(time)
     if 7.00 <= time_float <= 8.00:
-        print("Breakfast time!")
+        print("breakfast time")
     elif 12.00 <= time_float <= 13.00:
-        print("Lunch time!")
+        print("lunch time")
     elif 18.00 <= time_float <= 19.00:
-        print("Dinner time!")
+        print("dinner time")
     else:
         print("")
 

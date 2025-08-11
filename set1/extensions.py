@@ -11,17 +11,16 @@ MIMETYPES = {
 
 
 def check_extension(filename: str) -> str:
+    extensions = filename.split(".")
 
-    filename, extension = filename.lower().split(".")
-
-    if extension in MIMETYPES.keys():
-        return MIMETYPES[extension]
+    if extensions[-1] in MIMETYPES.keys():
+        return MIMETYPES[extensions[-1]]
     else:
         return MIMETYPES["default"]
 
 
 def main():
-    filename = input("File name: ")
+    filename = input("File name: ").strip().lower()
     print(check_extension(filename))
 
 
