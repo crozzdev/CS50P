@@ -55,3 +55,6 @@ coverage.xml
 
 #PDF files
 *.pdf
+
+#env files
+.env
