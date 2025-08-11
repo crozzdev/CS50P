@@ -8,6 +8,12 @@ def test_valid_plates():
     assert is_valid("AB12") is True
 
 
+def test_begins_with_two_letters():
+    assert is_valid("A1234") is False
+    assert is_valid("1BC23") is False
+    assert is_valid("AB123") is True
+
+
 def test_too_short_or_long():
     assert is_valid("A") is False
     assert is_valid("ABCDEFG") is False

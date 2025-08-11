@@ -1,5 +1,4 @@
 import pytest
-
 from fuel import convert, gauge
 
 
@@ -24,8 +23,11 @@ def test_convert_zero_denominator():
 def test_convert_invalid_fraction():
     with pytest.raises(ValueError):
         convert("5/4")
-        convert("-1/2")
-        convert("1/-2")
+
+
+def test_convert_negative_fraction():
+    with pytest.raises(ValueError):
+        convert("-2/4")
 
 
 def test_convert_non_integer():
