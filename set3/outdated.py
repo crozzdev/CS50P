@@ -20,14 +20,14 @@ MAX_MONTHS_YEAR = 12
 
 
 def get_and_check_date() -> list:
-
     while True:
-
         try:
             date_str = input("Date: ").strip()
-            if "/" not in date_str and "," not in date_str:
+            if ("/" not in date_str and "," not in date_str) or (
+                "/" in date_str and not date_str.replace("/", "").isdigit()
+            ):
                 continue
-            date_list = date_str.split() if not "/" in date_str else date_str.split("/")
+            date_list = date_str.split() if "/" not in date_str else date_str.split("/")
             if len(date_list) == 3:
                 month, day, year = date_list
 
