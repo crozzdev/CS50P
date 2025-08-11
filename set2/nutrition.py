@@ -25,7 +25,7 @@ FRUITS_CALORIES = {
 def main():
     fruit = input("Item: ")
     calories = FRUITS_CALORIES.get(fruit.lower(), "")
-    print(f"Calories: {calories}")
+    print(calories)
 
 
 main()
