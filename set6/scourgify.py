@@ -14,7 +14,7 @@ def check_arguments():
 
 def get_scourgified(r_csv_path: str, w_csv_path: str) -> None:
     try:
-        with open(r_csv_path, "r") as r_csv_file, open(w_csv_path, "a") as w_csv_file:
+        with open(r_csv_path, "r") as r_csv_file, open(w_csv_path, "w") as w_csv_file:
             csv_r_obj = csv.DictReader(r_csv_file)
             csv_w_obj = csv.DictWriter(
                 w_csv_file, fieldnames=["first", "last", "house"]
