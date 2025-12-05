@@ -50,5 +50,6 @@ uv run python set5/test_plates.py
 - `set6/` - Problem Set 6
 - `set7/` - Problem Set 7
 - `set8/` - Problem Set 8
+- `finalProject/` - Final Project
 
 Each directory contains the Python files and any additional resources for that problem set.
