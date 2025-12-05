@@ -128,3 +128,16 @@ def test_description_max_length():
         type_transaction="income",
     )
     assert transaction.description == max_description
+
+
+def test_invalid_date():
+    # Test that date must be a valid datetime
+    with pytest.raises(ValidationError):
+        Transaction(
+            title="Test",
+            description="Test",
+            date="invalid date",  # type: ignore
+            tags=None,
+            amount=100.0,
+            type_transaction="income",
+        )
