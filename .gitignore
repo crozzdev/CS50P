@@ -58,3 +58,6 @@ coverage.xml
 
 #env files
 .env
+
+#json files
+*.json
