@@ -24,7 +24,7 @@ class TransactionService:
                 data = json.load(json_file)
                 self.transactions = [Transaction(**t) for t in data]
         except (FileNotFoundError, json.JSONDecodeError):
-            print("No file found or invalid JSON, creating a new one")
+            print("No file found or invalid JSON, creating a new one\n")
             self.transactions = []
 
     def add_transaction(self, transaction: Transaction) -> None:
