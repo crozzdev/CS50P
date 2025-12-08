@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class Transaction(BaseModel):
-    title: str = Field(max_length=70)
+    title: str = Field(min_length=5, max_length=70)
     description: str = Field(max_length=255)
     date: datetime
     tags: Optional[list[str]]
