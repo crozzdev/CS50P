@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Literal
 import re
 
-OPTIONS = [1, 2]
+OPTIONS = [1, 2, 3]
 
 
 def get_title() -> str:
@@ -114,7 +114,7 @@ def get_user_choice() -> int:
         try:
             choice = int(
                 input(
-                    "\nWhat do you want to do? Please select a number\n1.Add a transaction\n2.Show all the transactions\n:"
+                    "\nWhat do you want to do? Please select a number\n1.Add a transaction\n2.Show all the transactions\n3.Show transactions by type\n"
                 )
             )
             if choice in OPTIONS:
@@ -137,6 +137,9 @@ if __name__ == "__main__":
                 print("Transaction added sucessfully!")
             elif choice == 2:
                 service.show_transactions()
-        except EOFError:
+            elif choice == 3:
+                type_transaction = get_type_transaction()
+                service.show_transactions_by_type(type_transaction)
+        except (EOFError, KeyboardInterrupt):
             print("\nGoodBye! :)")
             break

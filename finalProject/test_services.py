@@ -89,7 +89,7 @@ def test_add_transaction(temp_file):
     # Test adding a transaction
     service = TransactionService(temp_file)
     transaction = Transaction(
-        title="Test",
+        title="Test1",
         description="Test transaction",
         date=datetime(2023, 10, 3),
         tags=None,
@@ -99,13 +99,13 @@ def test_add_transaction(temp_file):
     service.add_transaction(transaction)
 
     assert len(service.transactions) == 1
-    assert service.transactions[0].title == "Test"
+    assert service.transactions[0].title == "Test1"
 
     # Check if saved to file
     with open(temp_file, "r") as f:
         data = json.load(f)
     assert len(data) == 1
-    assert data[0]["title"] == "Test"
+    assert data[0]["title"] == "Test1"
 
 
 def test_calculate_balance_empty(temp_file):
@@ -197,4 +197,24 @@ def test_show_transactions_with_data(capfd, sample_transactions):
     assert "Salary" in output
     assert "Groceries" in output
     assert "5000" in output
+    assert "100" in output
+
+
+def test_show_transactions_by_type_income(capfd, sample_transactions):
+    service = TransactionService()
+    service.transactions = sample_transactions
+    service.show_transactions_by_type("income")
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "Salary" in output
+    assert "5000" in output
+
+
+def test_show_transactions_by_type_expense(capfd, sample_transactions):
+    service = TransactionService()
+    service.transactions = sample_transactions
+    service.show_transactions_by_type("expense")
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "Groceries" in output
     assert "100" in output

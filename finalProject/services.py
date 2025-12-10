@@ -1,6 +1,7 @@
 from model import Transaction
 from datetime import datetime
 from tabulate import tabulate
+from typing import Literal
 import json
 
 
@@ -33,7 +34,23 @@ class TransactionService:
 
     def show_transactions(self) -> None:
         data = self._dump_transactions()
-        print(tabulate(data, headers="keys"))
+
+        print(tabulate(data, headers="keys", tablefmt="fancy_grid"))
+        print(f"The current balance is: ${self.calculate_balance()}\n")
+
+    def show_transactions_by_type(
+        self, type_transaction: Literal["income", "expense"]
+    ) -> None:
+        data = list(
+            filter(
+                lambda t: t.get("type_transaction") == type_transaction,
+                self._dump_transactions(),
+            )
+        )
+        total = sum([t.get("amount", 0) for t in data])
+
+        print(tabulate(data, headers="keys", tablefmt="grid"))
+        print(f"Total: {total}\n")
 
     def calculate_balance(self) -> float:
         balance = 0
@@ -71,3 +88,5 @@ if __name__ == "__main__":
     )
     print(service.calculate_balance())
     service.show_transactions()
+    service.show_transactions_by_type("income")
+    service.show_transactions_by_type("expense")
