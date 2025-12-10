@@ -3,6 +3,7 @@ from services import TransactionService
 from pydantic import ValidationError
 from pyfiglet import Figlet
 from datetime import datetime
+from typing import Literal
 import re
 
 OPTIONS = [1, 2]
@@ -68,41 +69,43 @@ def get_amount() -> float:
             print("The amount value is invalid, please enter it again")
 
 
-def get_type_transaction() -> str:
+def get_type_transaction() -> Literal["income", "expense"]:
     """Gets the type of the transaction (Income or Expense)"""
     while True:
         type_transaction = input("Type (Income/Expense): ").lower()
         if type_transaction in ["income", "expense"]:
-            return type_transaction
-        print("Invalid type, please enter 'Income' or 'Expense'")
+            return "income" if type_transaction == "income" else "expense"
+        print("Invalid transaction type, please enter 'Income' or 'Expense'")
 
 
 def get_user_transaction() -> Transaction:
     """Gets the user transaction information from the terminal and outputs the corresponding Transaction object"""
-    try:
-        title = get_title()
-        description = get_description()
-        date = get_date_from_user()
-        tags = get_tags()
-        amount = get_amount()
-        type_transaction = get_type_transaction()
 
-        transaction = Transaction(
-            title=title,
-            description=description,
-            date=date,
-            tags=tags,
-            amount=amount,
-            type_transaction=type_transaction,
-        )
-        return transaction
+    while True:
+        try:
+            title = get_title()
+            description = get_description()
+            date = get_date_from_user()
+            tags = get_tags()
+            amount = get_amount()
+            type_transaction = get_type_transaction()
 
-    except ValidationError as e:
-        print("\nValidation errors:")
-        for error in e.errors():
-            field = error["loc"][0]
-            message = error["msg"]
-            print(f"  - {field}: {message}")
+            transaction = Transaction(
+                title=title,
+                description=description,
+                date=date,
+                tags=tags,
+                amount=amount,
+                type_transaction=type_transaction,
+            )
+            return transaction
+
+        except ValidationError as e:
+            print("\nValidation errors:")
+            for error in e.errors():
+                field = error["loc"][0]
+                message = error["msg"]
+                print(f"  - {field}: {message}")
 
 
 def get_user_choice() -> int:
