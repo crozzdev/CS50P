@@ -122,24 +122,25 @@ def get_user_choice() -> int:
             raise ValueError
         except ValueError:
             print("You didn't chose a valid option, please enter it again")
-
-
-if __name__ == "__main__":
-    f = Figlet(font="cybermedium", justify="center")
-    print(f.renderText("Personal Finance CLI"))
-    service = TransactionService()
-    while True:
-        try:
-            choice = get_user_choice()
-            if choice == 1:
-                transaction = get_user_transaction()
-                service.add_transaction(transaction)
-                print("Transaction added sucessfully!")
-            elif choice == 2:
-                service.show_transactions()
-            elif choice == 3:
-                type_transaction = get_type_transaction()
-                service.show_transactions_by_type(type_transaction)
-        except (EOFError, KeyboardInterrupt):
-            print("\nGoodBye! :)")
-            break
+            if __name__ == "__main__":
+                f = Figlet(font="cybermedium", justify="center")
+                print(f.renderText("Personal Finance CLI"))
+                service = TransactionService()
+                while True:
+                    try:
+                        choice = get_user_choice()
+                        match choice:
+                            case 1:
+                                transaction = get_user_transaction()
+                                service.add_transaction(transaction)
+                                print("Transaction added sucessfully!")
+                            case 2:
+                                service.show_transactions()
+                            case 3:
+                                type_transaction = get_type_transaction()
+                                service.show_transactions_by_type(type_transaction)
+                            case _:
+                                print("You didn't choose a valid option, please try again")
+                    except (EOFError, KeyboardInterrupt):
+                        print("\nGoodBye! :)")
+                        break
