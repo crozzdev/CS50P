@@ -7,6 +7,8 @@ from main import (
     get_tags,
     get_amount,
     get_type_transaction,
+    get_mode_period,
+    get_key_dates,
 )
 
 
@@ -112,6 +114,39 @@ class TestGetTypeTransaction:
     def test_valid_income_lowercase(self, monkeypatch):
         monkeypatch.setattr("builtins.input", lambda _: "income")
         assert get_type_transaction() == "income"
+
+
+class TestGetModePeriodAndKeyDates:
+    def test_get_mode_period_valid(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "custom")
+        assert get_mode_period() == "custom"
+
+    def test_get_mode_period_invalid_then_valid(self, monkeypatch):
+        inputs = iter(["invalid", "month-year"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        assert get_mode_period() == "month-year"
+
+    def test_get_key_dates_custom_single(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "2023-10-01")
+        assert get_key_dates("custom") == ["2023-10-01"]
+
+    def test_get_key_dates_custom_range(self, monkeypatch):
+        # Input two dates separated by a comma for a range
+        monkeypatch.setattr("builtins.input", lambda _: "2023-10-01, 2023-10-02")
+        assert get_key_dates("custom") == ["2023-10-01", "2023-10-02"]
+
+    def test_get_key_dates_month_year(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "2023-10")
+        assert get_key_dates("month-year") == ["2023-10"]
+
+    def test_get_key_dates_year(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "2023")
+        assert get_key_dates("year") == ["2023"]
+
+    def test_get_key_dates_invalid_then_valid(self, monkeypatch):
+        inputs = iter(["invalid-date", "2023-10-01"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        assert get_key_dates("custom") == ["2023-10-01"]
 
     def test_invalid_type_then_valid(self, monkeypatch):
         inputs = iter(["invalid", "Income"])

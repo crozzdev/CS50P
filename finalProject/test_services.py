@@ -108,22 +108,20 @@ def test_add_transaction(temp_file):
     assert data[0]["title"] == "Test1"
 
 
-def test_calculate_balance_empty(temp_file):
+def test_calculate_totals_empty(temp_file):
     # Test balance with no transactions
     service = TransactionService(temp_file)
-    assert service.calculate_balance() == 0.0
+    assert service.get_totals() == (0.0, 0.0, 0.0)
 
 
-def test_calculate_balance_with_transactions(sample_transactions):
-    # Test balance calculation
+def test_calculate_totals_with_transactions(sample_transactions):
     service = TransactionService()
     service.transactions = sample_transactions
 
-    # 5000 income - 100 expense = 4900
-    assert service.calculate_balance() == 4900.0
+    assert service.get_totals() == (5000.0, 100.0, 4900.0)
 
 
-def test_calculate_balance_multiple_transactions():
+def test_calculate_totals_multiple_transactions():
     # Test with more transactions
     service = TransactionService()
     service.transactions = [
@@ -161,7 +159,7 @@ def test_calculate_balance_multiple_transactions():
         ),
     ]
     # 1000 + 500 - 200 - 100 = 1200
-    assert service.calculate_balance() == 1200.0
+    assert service.get_totals() == (1500.0, 300.0, 1200.0)
 
 
 def test_show_transactions_empty(capfd, temp_file):
@@ -178,7 +176,7 @@ def test_show_transactions_empty(capfd, temp_file):
         line for line in lines if line.strip() and not line.startswith("No file")
     ]
     # Either empty or has headers
-    assert len(table_lines) <= 2  # headers or empty
+    assert len(table_lines) <= 3  # headers or empty
 
 
 def test_show_transactions_with_data(capfd, sample_transactions):
@@ -218,3 +216,60 @@ def test_show_transactions_by_type_expense(capfd, sample_transactions):
     output = captured.out
     assert "Groceries" in output
     assert "100" in output
+
+
+def test_show_transactions_by_period_custom(capfd, sample_transactions):
+    # Test custom mode with exact date match
+    service = TransactionService()
+    service.transactions = sample_transactions
+    service.show_transactions_by_period("custom", ["2023-10-01"])
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "Salary" in output
+    assert "5000" in output
+    # Should not include the Groceries transaction
+    assert "Groceries" not in output
+
+
+def test_show_transactions_by_period_custom_range(capfd, sample_transactions):
+    # Test custom mode with a start and end date range
+    service = TransactionService()
+    service.transactions = sample_transactions
+    # Provide initial and last dates to capture both transactions in the range
+    service.show_transactions_by_period("custom", ["2023-10-01", "2023-10-02"])
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "Salary" in output
+    assert "Groceries" in output
+
+
+def test_show_transactions_by_period_month_year(capfd, sample_transactions):
+    # Test month-year mode grouping
+    service = TransactionService()
+    service.transactions = sample_transactions
+    service.show_transactions_by_period("month-year", ["2023-10"])
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "Salary" in output
+    assert "Groceries" in output
+
+
+def test_show_transactions_by_period_year(capfd, sample_transactions):
+    # Test year mode grouping
+    service = TransactionService()
+    service.transactions = sample_transactions
+    service.show_transactions_by_period("year", ["2023"])
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "Salary" in output
+    assert "Groceries" in output
+
+
+def test_show_transactions_by_period_none(capfd, sample_transactions):
+    # Test no matches return proper message
+    service = TransactionService()
+    service.transactions = sample_transactions
+    service.show_transactions_by_period("custom", ["2022-01-01"])
+    captured = capfd.readouterr()
+    output = captured.out
+    assert "No transactions found for the specified period." in output

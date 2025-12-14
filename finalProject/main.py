@@ -1,12 +1,11 @@
 from model import Transaction
 from services import TransactionService
+from constants import OPTIONS, MODE_OPTIONS
 from pydantic import ValidationError
 from pyfiglet import Figlet
 from datetime import datetime
 from typing import Literal
 import re
-
-OPTIONS = [1, 2, 3]
 
 
 def get_title() -> str:
@@ -108,13 +107,57 @@ def get_user_transaction() -> Transaction:
                 print(f"  - {field}: {message}")
 
 
+def get_mode_period() -> str:
+    """Gets the mode of the transaction period filtering"""
+    while True:
+        mode = input(
+            "\nSelect the mode for filtering by period (custom/month-year/year): "
+        ).lower()
+        if mode in MODE_OPTIONS:
+            return mode
+        print("You didn't choose a valid mode, please try again")
+
+
+def get_key_dates(mode: str) -> list[str]:
+    """Gets the key dates for filtering transactions by period based on the selected mode"""
+    key_dates = []
+    e_msg = "You entered the period in the wrong format, please try again"
+    while True:
+        try:
+            if mode == "custom":
+                date_input = input(
+                    "Enter the date(s) for custom mode (YYYY-MM-DD). For a range, separate two dates with a comma: "
+                )
+                potential_dates = [d.strip() for d in date_input.split(",")]
+                if not (1 <= len(potential_dates) <= 2):
+                    e_msg = "You can only enter two dates: initial date and end date"
+                    raise ValueError
+
+                for d in potential_dates:
+                    datetime.strptime(d, "%Y-%m-%d")
+                key_dates = potential_dates
+            elif mode == "month-year":
+                month_year = input(
+                    "Enter the month and year for month-year (YYYY-MM): "
+                ).strip()
+                datetime.strptime(month_year, "%Y-%m")
+                key_dates.append(month_year)
+            elif mode == "year":
+                year = input("Enter the year (YYYY): ").strip()
+                datetime.strptime(year, "%Y")
+                key_dates.append(year)
+            return key_dates
+        except ValueError:
+            print(e_msg)
+
+
 def get_user_choice() -> int:
     """Displays the menu of options and get the user's choice"""
     while True:
         try:
             choice = int(
                 input(
-                    "\nWhat do you want to do? Please select a number\n1.Add a transaction\n2.Show all the transactions\n3.Show transactions by type\n"
+                    "\nWhat do you want to do? Please select a number\n1.Add a transaction\n2.Show all the transactions\n3.Show transactions by type\n4.Show transactions by period\nTo exit, press Ctrl+D or Ctrl+C\nChoice (only type a number): "
                 )
             )
             if choice in OPTIONS:
@@ -122,25 +165,31 @@ def get_user_choice() -> int:
             raise ValueError
         except ValueError:
             print("You didn't chose a valid option, please enter it again")
-            if __name__ == "__main__":
-                f = Figlet(font="cybermedium", justify="center")
-                print(f.renderText("Personal Finance CLI"))
-                service = TransactionService()
-                while True:
-                    try:
-                        choice = get_user_choice()
-                        match choice:
-                            case 1:
-                                transaction = get_user_transaction()
-                                service.add_transaction(transaction)
-                                print("Transaction added sucessfully!")
-                            case 2:
-                                service.show_transactions()
-                            case 3:
-                                type_transaction = get_type_transaction()
-                                service.show_transactions_by_type(type_transaction)
-                            case _:
-                                print("You didn't choose a valid option, please try again")
-                    except (EOFError, KeyboardInterrupt):
-                        print("\nGoodBye! :)")
-                        break
+
+
+if __name__ == "__main__":
+    f = Figlet(font="cybermedium", justify="center")
+    print(f.renderText("Personal Finance CLI"))
+    service = TransactionService()
+    while True:
+        try:
+            choice = get_user_choice()
+            match choice:
+                case 1:
+                    transaction = get_user_transaction()
+                    service.add_transaction(transaction)
+                    print("Transaction added sucessfully!")
+                case 2:
+                    service.show_transactions()
+                case 3:
+                    type_transaction = get_type_transaction()
+                    service.show_transactions_by_type(type_transaction)
+                case 4:
+                    period_mode = get_mode_period()
+                    key_dates = get_key_dates(period_mode)
+                    service.show_transactions_by_period(period_mode, key_dates)
+                case _:
+                    print("You didn't choose a valid option, please try again")
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodBye! :)")
+            break

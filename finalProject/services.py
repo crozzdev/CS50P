@@ -14,6 +14,12 @@ class TransactionService:
     def _dump_transactions(self) -> list[dict]:
         return [t.model_dump(mode="json") for t in self.transactions]
 
+    def _show_totals(self, totals: tuple[float, float, float]) -> None:
+        total_income, total_expense, balance = totals
+        print(f"Total income: ${total_income}")
+        print(f"Total Expense: ${total_expense}")
+        print(f"Balance: ${balance}\n")
+
     def save_data(self) -> None:
         with open(self.file_path, "w") as json_file:
             data = self._dump_transactions()
@@ -30,13 +36,14 @@ class TransactionService:
 
     def add_transaction(self, transaction: Transaction) -> None:
         self.transactions.append(transaction)
+        self.organize_transactions()
         self.save_data()
 
     def show_transactions(self) -> None:
         data = self._dump_transactions()
 
         print(tabulate(data, headers="keys", tablefmt="fancy_grid"))
-        print(f"The current balance is: ${self.calculate_balance()}\n")
+        self._show_totals(self.get_totals())
 
     def show_transactions_by_type(
         self, type_transaction: Literal["income", "expense"]
@@ -52,16 +59,60 @@ class TransactionService:
         print(tabulate(data, headers="keys", tablefmt="grid"))
         print(f"Total: {total}\n")
 
-    def calculate_balance(self) -> float:
+    def get_totals(
+        self, transactions: list[Transaction] = []
+    ) -> tuple[float, float, float]:
+        """Returns the total income, expense and balance for the specified group of transactions"""
+        total_income = 0
+        total_expense = 0
         balance = 0
-        if not self.transactions:
-            return balance
-        for t in self.transactions:
-            if t.type_transaction == "income":
-                balance += t.amount
+
+        if not transactions:
+            transactions = self.transactions
+
+        total_income = sum(
+            [t.amount for t in transactions if t.type_transaction == "income"]
+        )
+        total_expense = sum(
+            [t.amount for t in transactions if t.type_transaction == "expense"]
+        )
+        balance = total_income - total_expense
+
+        return (total_income, total_expense, balance)
+
+    def organize_transactions(self, order: bool = True) -> None:
+        """Organizes the transactions in chronological order either ascending (older first) or descending(newer first)"""
+        self.transactions = sorted(
+            self.transactions, key=lambda t: t.date, reverse=order
+        )
+
+    def show_transactions_by_period(self, mode: str, key_dates: list[str]) -> None:
+        """Show transactions by date based on the specified mode and key_dates"""
+        grouped_transactions = []
+
+        for transaction in self.transactions:
+            if mode == "custom":
+                date_key = transaction.date.strftime("%Y-%m-%d")
+            elif mode == "month-year":
+                date_key = transaction.year_month_key
             else:
-                balance -= t.amount
-        return balance
+                date_key = str(transaction.year)
+
+            if date_key in key_dates:
+                grouped_transactions.append(transaction)
+
+        if not grouped_transactions:
+            print("No transactions found for the specified period.")
+            return None
+
+        print(
+            tabulate(
+                [t.model_dump(mode="json") for t in grouped_transactions],
+                headers="keys",
+                tablefmt="fancy_grid",
+            )
+        )
+        self._show_totals(self.get_totals(grouped_transactions))
 
 
 if __name__ == "__main__":
@@ -86,7 +137,7 @@ if __name__ == "__main__":
             type_transaction="expense",
         )
     )
-    print(service.calculate_balance())
+    print(service.get_totals())
     service.show_transactions()
     service.show_transactions_by_type("income")
     service.show_transactions_by_type("expense")

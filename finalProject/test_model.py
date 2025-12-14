@@ -120,7 +120,7 @@ def test_description_max_length():
     # Test that description can be exactly 255 characters
     max_description = "a" * 255
     transaction = Transaction(
-        title="Test",
+        title="Title",
         description=max_description,
         date=datetime(2023, 10, 1),
         tags=None,
@@ -141,3 +141,40 @@ def test_invalid_date():
             amount=100.0,
             type_transaction="income",
         )
+
+
+def test_date_components_and_year_month_key():
+    # Test year, month, day properties and year_month_key formatting (zero padded)
+    transaction = Transaction(
+        title="Test Date",
+        description="Date test",
+        date=datetime(2023, 4, 9),
+        tags=None,
+        amount=10.0,
+        type_transaction="income",
+    )
+    assert transaction.year == 2023
+    assert transaction.month == 4
+    assert transaction.day == 9
+    assert transaction.year_month_key == "2023-04"
+
+
+def test_year_month_key_sorting():
+    # Ensure year_month_key is a sortable string (lexicographically matches chronological order)
+    t1 = Transaction(
+        title="Older Entry",
+        description="Older",
+        date=datetime(2022, 12, 31),
+        tags=None,
+        amount=20.0,
+        type_transaction="expense",
+    )
+    t2 = Transaction(
+        title="Newer Entry",
+        description="Newer",
+        date=datetime(2023, 1, 1),
+        tags=None,
+        amount=30.0,
+        type_transaction="income",
+    )
+    assert t1.year_month_key < t2.year_month_key
