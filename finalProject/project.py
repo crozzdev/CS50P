@@ -218,7 +218,8 @@ def confirm_data_deletion() -> bool | None:
     return False
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main function to run the Personal Finance CLI application"""
     f = Figlet(font="cybermedium", justify="center")
     print(f.renderText("Personal Finance CLI"))
     service = TransactionService()
@@ -254,3 +255,7 @@ if __name__ == "__main__":
         except (EOFError, KeyboardInterrupt):
             print("\nGoodBye! :)")
             break
+
+
+if __name__ == "__main__":
+    main()

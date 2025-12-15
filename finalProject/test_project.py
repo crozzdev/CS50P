@@ -1,5 +1,5 @@
 from datetime import datetime
-from main import (
+from project import (
     get_title,
     get_description,
     get_date_from_user,
