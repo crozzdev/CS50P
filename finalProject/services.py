@@ -2,6 +2,7 @@ from model import Transaction
 from datetime import datetime
 from tabulate import tabulate
 from typing import Literal
+import os
 import json
 
 
@@ -34,6 +35,14 @@ class TransactionService:
             print("No file found or invalid JSON, creating a new one\n")
             self.transactions = []
 
+    def delete_data(self) -> None:
+        """Deletes all the transactions data"""
+        try:
+            os.remove(self.file_path)
+            self.transactions = []
+        except FileNotFoundError:
+            print("No file found to delete\n")
+
     def add_transaction(self, transaction: Transaction) -> None:
         self.transactions.append(transaction)
         self.organize_transactions()
@@ -42,7 +51,7 @@ class TransactionService:
     def show_transactions(self) -> None:
         data = self._dump_transactions()
 
-        print(tabulate(data, headers="keys", tablefmt="fancy_grid"))
+        print(tabulate(data, headers="keys", tablefmt="fancy_grid", showindex=True))
         self._show_totals(self.get_totals())
 
     def show_transactions_by_type(
@@ -54,10 +63,14 @@ class TransactionService:
                 self._dump_transactions(),
             )
         )
-        total = sum([t.get("amount", 0) for t in data])
 
-        print(tabulate(data, headers="keys", tablefmt="grid"))
-        print(f"Total: {total}\n")
+        if data:
+            total = sum([t.get("amount", 0) for t in data])
+
+            print(tabulate(data, headers="keys", tablefmt="grid", showindex=True))
+            print(f"Total: {total}\n")
+        else:
+            print(f"No transactions found with the type: {type_transaction}")
 
     def get_totals(
         self, transactions: list[Transaction] = []
@@ -110,9 +123,19 @@ class TransactionService:
                 [t.model_dump(mode="json") for t in grouped_transactions],
                 headers="keys",
                 tablefmt="fancy_grid",
+                showindex=True,
             )
         )
         self._show_totals(self.get_totals(grouped_transactions))
+
+    def delete_transaction(self, transaction_id: int) -> None:
+        """Deletes the transaction at specified index"""
+        try:
+            self.transactions.pop(transaction_id)
+            print(f"Transaction ID {transaction_id} deleted successfully.")
+            self.save_data()
+        except IndexError:
+            print(f"Transaction ID {transaction_id} is out of range.")
 
 
 if __name__ == "__main__":
@@ -141,3 +164,6 @@ if __name__ == "__main__":
     service.show_transactions()
     service.show_transactions_by_type("income")
     service.show_transactions_by_type("expense")
+    service.delete_transaction(0)
+    service.show_transactions_by_type("expense")
+    service.show_transactions()

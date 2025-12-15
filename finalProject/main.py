@@ -151,6 +151,24 @@ def get_key_dates(mode: str) -> list[str]:
             print(e_msg)
 
 
+def get_user_transaction_id(transactions: list[Transaction]) -> int:
+    """Gets the transaction id the user wants to delete"""
+    while True:
+        try:
+            transaction_id = int(
+                input(
+                    "Please enter the index(transaction id) of the transaction you want to delete"
+                )
+            )
+            if 0 <= transaction_id < len(transactions):
+                return transaction_id
+            raise ValueError
+        except ValueError:
+            print(
+                "The value is not valid either because is out of range or is not a number, please try again"
+            )
+
+
 def get_user_choice() -> int:
     """Displays the menu of options and get the user's choice"""
     while True:
@@ -165,6 +183,36 @@ def get_user_choice() -> int:
             raise ValueError
         except ValueError:
             print("You didn't chose a valid option, please enter it again")
+
+
+def confirm_transaction_deletion(
+    transaction_id: int, transactions: list[Transaction]
+) -> bool | None:
+    """Confirms to the user if they want to delete a certain transaction"""
+
+    transaction_details = transactions[transaction_id]
+    confirmation = input(
+        f"Here is the details of the transaction you want to delete:\n{transaction_details}\nAre you sure you want to delete it? Please response (Y/N):\n"
+    )
+    if confirmation.lower() in ["y", "yes", "ok"]:
+        return True
+    print(
+        "As you didn't confirm, the operation was cancelled and no transaction was deleted"
+    )
+    return False
+
+
+def confirm_data_deletion() -> bool | None:
+    """Confirms to the user if they want to delete all the transactions data"""
+
+    confirmation = input(
+        "Are you sure you want to delete ALL the transactions data? This action cannot be undone. Please respond DELETE (no other options are allowed):\n"
+    )
+
+    if confirmation.lower() == "delete":
+        return True
+    print("As you didn't confirm, the operation was cancelled and no data was deleted")
+    return False
 
 
 if __name__ == "__main__":
@@ -188,6 +236,16 @@ if __name__ == "__main__":
                     period_mode = get_mode_period()
                     key_dates = get_key_dates(period_mode)
                     service.show_transactions_by_period(period_mode, key_dates)
+                case 5:
+                    transaction_id = get_user_transaction_id(service.transactions)
+                    if confirm_transaction_deletion(
+                        transaction_id, service.transactions
+                    ):
+                        service.delete_transaction(transaction_id)
+                case 6:
+                    if confirm_data_deletion():
+                        service.delete_data()
+                        print("All transactions data deleted successfully.")
                 case _:
                     print("You didn't choose a valid option, please try again")
         except (EOFError, KeyboardInterrupt):

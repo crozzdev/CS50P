@@ -273,3 +273,79 @@ def test_show_transactions_by_period_none(capfd, sample_transactions):
     captured = capfd.readouterr()
     output = captured.out
     assert "No transactions found for the specified period." in output
+
+
+def test_delete_transaction_updates_file_and_list(temp_file, sample_transactions):
+    # Prepare file with two transactions
+    data = [t.model_dump(mode="json") for t in sample_transactions]
+    with open(temp_file, "w") as f:
+        json.dump(data, f)
+
+    service = TransactionService(temp_file)
+    # Delete first transaction (index 0)
+    service.delete_transaction(0)
+
+    # In-memory list updated
+    assert len(service.transactions) == 1
+    assert service.transactions[0].title == "Groceries"
+
+    # File updated
+    with open(temp_file, "r") as f:
+        file_data = json.load(f)
+    assert len(file_data) == 1
+    assert file_data[0]["title"] == "Groceries"
+
+
+def test_delete_transaction_index_error(temp_file, sample_transactions, capfd):
+    # Test deleting with invalid index prints message and does not raise
+    service = TransactionService(temp_file)
+    service.transactions = sample_transactions
+    service.save_data()
+
+    service.delete_transaction(10)
+    captured = capfd.readouterr()
+    assert "Transaction ID 10 is out of range." in captured.out
+
+    # Ensure in-memory list and file remain unchanged
+    assert len(service.transactions) == 2
+    with open(temp_file, "r") as f:
+        data = json.load(f)
+    assert len(data) == 2
+
+
+def test_delete_data_existing_and_nonexistent(capfd):
+    # Existing file: should be removed and transactions cleared
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as f:
+        tmpname = f.name
+        # write initial data
+        data = [
+            Transaction(
+                title="Trans1",
+                description="",
+                date=datetime(2023, 1, 1),
+                tags=None,
+                amount=10.0,
+                type_transaction="income",
+            ).model_dump(mode="json")
+        ]
+        json.dump(data, f)
+
+    service = TransactionService(tmpname)
+    assert os.path.exists(tmpname)
+    service.delete_data()
+    assert not os.path.exists(tmpname)
+    assert service.transactions == []
+    # recreate file so external cleanup won't fail
+    open(tmpname, "w").close()
+    os.unlink(tmpname)
+
+    # Nonexistent file: should print message when trying to delete
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as f2:
+        tmpname2 = f2.name
+    # remove it to simulate missing file
+    os.unlink(tmpname2)
+
+    service2 = TransactionService(tmpname2)
+    service2.delete_data()
+    captured = capfd.readouterr()
+    assert "No file found to delete" in captured.out

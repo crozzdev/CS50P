@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime
 from main import (
     get_title,
@@ -9,6 +8,9 @@ from main import (
     get_type_transaction,
     get_mode_period,
     get_key_dates,
+    get_user_transaction_id,
+    confirm_transaction_deletion,
+    confirm_data_deletion,
 )
 
 
@@ -152,3 +154,53 @@ class TestGetModePeriodAndKeyDates:
         inputs = iter(["invalid", "Income"])
         monkeypatch.setattr("builtins.input", lambda _: next(inputs))
         assert get_type_transaction() == "income"
+
+
+class TestGetUserTransactionId:
+    def test_valid_index(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "1")
+        transactions = [None, None, None]
+        assert get_user_transaction_id(transactions) == 1  # type: ignore
+
+    def test_invalid_input_then_valid(self, monkeypatch):
+        inputs = iter(["abc", "2"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        transactions = [None, None, None]
+        assert get_user_transaction_id(transactions) == 2  # type: ignore
+
+    def test_out_of_range_then_valid(self, monkeypatch):
+        inputs = iter(["10", "0"])
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        transactions = [None]
+        assert get_user_transaction_id(transactions) == 0  # type: ignore
+
+
+class TestConfirmTransactionDeletion:
+    def test_confirm_yes(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "Y")
+        transactions = ["t0", "t1"]
+        assert confirm_transaction_deletion(1, transactions) is True  # type: ignore
+
+    def test_confirm_no_prints_and_returns_false(self, monkeypatch, capsys):
+        monkeypatch.setattr("builtins.input", lambda _: "no")
+        transactions = ["t0"]
+        result = confirm_transaction_deletion(0, transactions)  # type: ignore
+        assert result is False
+        captured = capsys.readouterr()
+        assert "As you didn't confirm, the operation was cancelled" in captured.out
+
+
+class TestConfirmDataDeletion:
+    def test_confirm_yes(self, monkeypatch):
+        monkeypatch.setattr("builtins.input", lambda _: "delete")
+        assert confirm_data_deletion() is True
+
+    def test_confirm_no_prints_and_returns_false(self, monkeypatch, capsys):
+        monkeypatch.setattr("builtins.input", lambda _: "n")
+        result = confirm_data_deletion()
+        assert result is False
+        captured = capsys.readouterr()
+        assert (
+            "As you didn't confirm, the operation was cancelled and no data was deleted"
+            in captured.out
+        )
