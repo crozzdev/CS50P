@@ -70,7 +70,7 @@ class TransactionService:
             print(tabulate(data, headers="keys", tablefmt="grid", showindex=True))
             print(f"Total: {total}\n")
         else:
-            print(f"No transactions found with the type: {type_transaction}")
+            print(f"No transactions found with the type: {type_transaction}\n")
 
     def get_totals(
         self, transactions: list[Transaction] = []
@@ -132,10 +132,10 @@ class TransactionService:
         """Deletes the transaction at specified index"""
         try:
             self.transactions.pop(transaction_id)
-            print(f"Transaction ID {transaction_id} deleted successfully.")
+            print(f"Transaction ID {transaction_id} deleted successfully.\n")
             self.save_data()
         except IndexError:
-            print(f"Transaction ID {transaction_id} is out of range.")
+            print(f"Transaction ID {transaction_id} is out of range.\n")
 
 
 if __name__ == "__main__":

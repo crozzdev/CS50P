@@ -2,10 +2,16 @@
 
 A small command-line application to track personal finances (income and expenses), persist them to a JSON file, and view summaries and filtered reports.
 
+You can add transactions with details like title, description, date, tags, amount, and type (Income/Expense). The app allows viewing all transactions, filtering by type or date period, and deleting individual transactions or all data.
+
+## Video Demo
+
+[![Personal Finance CLI Demo](https://i9.ytimg.com/vi_webp/Cm60zlB4Ut8/mq1.webp?sqp=CPizgsoG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYACsAWKAgwIABABGGUgWyhKMA8=&rs=AOn4CLB_N4X_xFzvG3EqXxiJf-6B2DirSA)](https://youtu.be/Cm60zlB4Ut8)
+
 **Requirements:**
 
 - **Python:** >= 3.12
-- **Dependencies:** pydantic, pyfiglet, tabulate (for runtime) and pytest (for tests). Install with `pip install pydantic pyfiglet tabulate pytest` or via your preferred environment manager.
+- **Dependencies:** pydantic, pyfiglet, tabulate (for runtime) and pytest (for tests). Install with `pip install pydantic pyfiglet tabulate pytest` or via your preferred environment manager ( I recommend using `uv` ).
 
 **Installation:**
 

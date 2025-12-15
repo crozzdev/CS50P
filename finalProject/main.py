@@ -14,7 +14,7 @@ def get_title() -> str:
         title = input("Title:")
         if len(title) > 5:
             return title
-        print("The title must be longer than 5 characters, please enter it again")
+        print("The title must be longer than 5 characters, please enter it again\n")
 
 
 def get_description() -> str:
@@ -45,6 +45,7 @@ def get_date_from_user() -> datetime:
                 return datetime.strptime(date_str, fmt)
             except ValueError:
                 pass
+        print("The date format is invalid, please enter it again\n")
 
 
 def get_tags() -> list[str]:
@@ -63,7 +64,7 @@ def get_amount() -> float:
             amount = float(input("Amount ($): "))
             if amount > 0:
                 return amount
-            print("The amount must be greater than 0")
+            print("The amount must be greater than 0\n")
         except ValueError:
             print("The amount value is invalid, please enter it again")
 
@@ -157,7 +158,7 @@ def get_user_transaction_id(transactions: list[Transaction]) -> int:
         try:
             transaction_id = int(
                 input(
-                    "Please enter the index(transaction id) of the transaction you want to delete"
+                    "Please enter the index(transaction id) of the transaction you want to delete: "
                 )
             )
             if 0 <= transaction_id < len(transactions):
@@ -175,7 +176,7 @@ def get_user_choice() -> int:
         try:
             choice = int(
                 input(
-                    "\nWhat do you want to do? Please select a number\n1.Add a transaction\n2.Show all the transactions\n3.Show transactions by type\n4.Show transactions by period\nTo exit, press Ctrl+D or Ctrl+C\nChoice (only type a number): "
+                    "\nWhat do you want to do? Please select a number\n1.Add a transaction\n2.Show all the transactions\n3.Show transactions by type\n4.Show transactions by period\n5.Delete a transaction\n6.Delete all data\nTo exit, press Ctrl+D or Ctrl+C\nChoice (only type a number): "
                 )
             )
             if choice in OPTIONS:
@@ -192,7 +193,7 @@ def confirm_transaction_deletion(
 
     transaction_details = transactions[transaction_id]
     confirmation = input(
-        f"Here is the details of the transaction you want to delete:\n{transaction_details}\nAre you sure you want to delete it? Please response (Y/N):\n"
+        f"Here are the details of the transaction you want to delete:\n{transaction_details}\nAre you sure you want to delete it? Please response (Y/N):\n"
     )
     if confirmation.lower() in ["y", "yes", "ok"]:
         return True
@@ -211,7 +212,9 @@ def confirm_data_deletion() -> bool | None:
 
     if confirmation.lower() == "delete":
         return True
-    print("As you didn't confirm, the operation was cancelled and no data was deleted")
+    print(
+        "As you didn't confirm, the operation was cancelled and no data was deleted\n"
+    )
     return False
 
 
@@ -226,7 +229,7 @@ if __name__ == "__main__":
                 case 1:
                     transaction = get_user_transaction()
                     service.add_transaction(transaction)
-                    print("Transaction added sucessfully!")
+                    print("\nTransaction added sucessfully!\n")
                 case 2:
                     service.show_transactions()
                 case 3:
@@ -245,9 +248,9 @@ if __name__ == "__main__":
                 case 6:
                     if confirm_data_deletion():
                         service.delete_data()
-                        print("All transactions data deleted successfully.")
+                        print("All transactions data deleted successfully.\n")
                 case _:
-                    print("You didn't choose a valid option, please try again")
+                    print("You didn't choose a valid option, please try again\n")
         except (EOFError, KeyboardInterrupt):
             print("\nGoodBye! :)")
             break
